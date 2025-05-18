@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vulnerability Scanner AI</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      #chat-window {
+        border: 1px solid #ccc;
+        padding: 10px;
+        max-width: 600px;
+        margin-top: 20px;
+        height: 400px;
+        overflow-y: auto;
+        background: #f9f9f9;
+      }
+      p { margin: 10px 0; }
+      form { margin-bottom: 20px; }
+      input[type="text"] { width: 400px; padding: 8px; }
+      button { padding: 8px 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Vulnerability Scanner AI</h1>
+    <p>Enter the name of the project (e.g., ENS) to analyze for vulnerabilities:</p>
+    <form id="chat-form">
+      <input type="text" name="project" placeholder="Project name" required>
+      <button type="submit">Analyze</button>
+    </form>
+    <div id="chat-window"></div>
+  
+    <script>
+      document.getElementById("chat-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var formData = new FormData(e.target);
+        var project = formData.get("project");
+        var chatWindow = document.getElementById("chat-window");
+        chatWindow.innerHTML += "<p><strong>You:</strong> " + project + "</p>";
+        
+        fetch("/api/analyze", {
+          method: "POST",
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            chatWindow.innerHTML += "<p><strong>AI:</strong> " + data.reply + "</p>";
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            e.target.reset();
+          })
+          .catch(error => {
+            chatWindow.innerHTML += "<p><strong>Error:</strong> " + error + "</p>";
+          });
+      });
+    </script>
+  </body>
+</html>
